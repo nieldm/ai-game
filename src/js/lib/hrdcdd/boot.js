@@ -8,6 +8,6 @@ requirejs.config({
 });
 
 define(['Phaser', 'math', 'MainState'], function(Phaser, math, MainState) {
-  this.game = new Phaser.Game(480, 600, Phaser.AUTO, 'aigame-game');
+  this.game = new Phaser.Game(320, 568, Phaser.CANVAS, 'aigame-game');
   return this.game.state.add('main', new MainState, true);
 });
