@@ -17,14 +17,19 @@ define(['Phaser', '/js/lib/hrdcdd/lib/Movements/Kinematic.js', '/js/lib/hrdcdd/l
     };
 
     MainState.prototype.create = function() {
+      if (this.game.scaleToFit) {
+        this.game.stage.scaleMode = Phaser.StageScaleMode.SHOW_ALL;
+        this.game.stage.scale.setShowAll();
+        this.game.stage.scale.refresh();
+      }
       this.debug = new Phaser.Utils.Debug(this.game);
-      this.wpTarget = new WayPointTarget(this.game, 10, 10, 'star');
+      this.wpTarget = new WayPointTarget(this.game, 150, 150, 'star');
       this.game.add.existing(this.wpTarget);
       this.player = new Player(this.game, 200, 200, 'baddie');
       this.player.animations.add('left', [0, 1], 10, true);
       this.player.animations.add('right', [2, 3], 10, true);
       this.game.add.existing(this.player);
-      this.dude = new Kinematic(this.game, this.game.world.centerX / 2, this.game.world.centerY / 2, 'dude', 1, 'wander');
+      this.dude = new Kinematic(this.game, 400, 400, 'dude', 1, 'arriveDynamic');
       this.dude.setTarget(this.wpTarget);
       return this.dude.create();
     };
@@ -33,7 +38,7 @@ define(['Phaser', '/js/lib/hrdcdd/lib/Movements/Kinematic.js', '/js/lib/hrdcdd/l
 
     MainState.prototype.render = function() {
       this.debug.renderSpriteBody(this.dude);
-      this.debug.renderSpriteInfo(this.wpTarget, 32, 32, "#ffffff");
+      this.debug.renderSpriteInfo(this.dude, 32, 32, "#ffffff");
       this.game.debug.renderPointer(this.game.input.mousePointer);
       return this.game.debug.renderPointer(this.game.input.pointer1);
     };

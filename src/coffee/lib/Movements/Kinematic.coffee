@@ -4,19 +4,37 @@ define [
             'Phaser',
             '/js/lib/hrdcdd/lib/Movements/KinematicSteeringOutput.js'
             '/js/lib/hrdcdd/lib/Movements/KinematicSeekFlee.js'
+            '/js/lib/hrdcdd/lib/Movements/KinematicArrive.js'
+            '/js/lib/hrdcdd/lib/Movements/KinematicWander.js'
+            '/js/lib/hrdcdd/lib/Movements/Seek.js'
+            '/js/lib/hrdcdd/lib/Movements/Arrive.js'
         ]
         , (
             Phaser,
             KinematicSteeringOutput,
-            KinematicSeekFlee
+            KinematicSeekFlee,
+            KinematicArrive,
+            KinematicWander,
+            Seek,
+            Arrive
         ) ->
     class Kinematic extends Phaser.Sprite
         constructor: (game, x, y, sprite, time, behavior) ->
 
+            @steering = new KinematicSteeringOutput()
+
             #Save the game enviromente as an atributte
             @game = game
-            @steering = new KinematicSteeringOutput()
-            @time = time
+            @timeNow = () -> Math.floor(@game.time.time / 1000) % 60
+            @time = 1
+            @behavior = behavior
+            @wanderCounter = 0
+            @wanderReset = 50
+            @maxSpeed = 4
+
+            @velocity = new Phaser.Point()
+            @position = @world
+            @orientation = 0
 
             #Make the sprite
             Phaser.Sprite.call @, game, x, y, sprite
@@ -35,6 +53,7 @@ define [
             window.world = @world
             window.Phaser = Phaser
             window.sprite = @
+            window.time = @time
 
         getTarget: () ->
             @target
@@ -45,36 +64,69 @@ define [
         create: ->
             @game.add.existing @
             @frame = 4
+            text = "niel's Game"
+            style = { font: "11 Arial", fill: "#ff0044", align: "left" }
+            @logger = @game.add.text @game.world.centerX-300, @game.world.centerY-100, text, style
 
         update: ->
             if @target?
-                @seekFlee = new KinematicSeekFlee @, @target, 0.1, true
-                @steering = @seekFlee.getSteering()
+                switch @behavior
+                    when 'seek' then @movement = new KinematicSeekFlee @, @target, 0.1, true
+                    when 'flee' then @movement = new KinematicSeekFlee @, @target, 0.1, false
+                    when 'arrive' then @movement = new KinematicArrive @, @target, 1, 25, 1.25
+                    when 'wander' then @movement = new KinematicWander @, 6, 2
+                    when 'seekDynamic' then @movement = new Seek @, @target, 2
+                    when 'fleeDynamic' then @movement = new Seek @, @target, 2, false
+                    when 'arriveDynamic' then @movement = new Arrive @, @target, 2, @maxSpeed, 10, 300
+                window.movement = @movement
+                if @movement?
+                    @newSteering = @movement.getSteering()
+                if @newSteering?
+                    @steering = @newSteering
+                    #@steering.linear = if @steering.velocity? then @steering.velocity else @steering.linear
+                    #@steering.angular = if @steering.rotation? then @steering.rotation else @steering.angular
+                else
+                    @velocity.setTo 0, 0
+                    @line.clear()
+
 
             if @steering?
-                @steering.velocity = @steering.velocity.multiply(@time, @time)
-                Phaser.Point.add @steering.velocity, @world, @world
+                #console.clear()
+
+
+                @position = Phaser.Point.add @position, @velocity.multiply @time, @time
+                @orientation += @rotation * @time
+
+                @velocity = Phaser.Point.add @velocity, @steering.linear.multiply @time, @time
+                @rotation += @steering.angular * @time
+
+                if @velocity.getMagnitude() > @maxSpeed
+                    @velocity.normalize()
+                    @velocity.multiply @maxSpeed, @maxSpeed
+
+                log = "steering linear x:#{@steering.linear.x} y:#{@steering.linear.y}"
+                log += "\nsteering angular #{@steering.angular}"
+                log += "\nposition x:#{@position.x} y:#{@position.y}"
+                log += "\nvelocity x:#{@velocity.x} y:#{@velocity.y}"
+                log += "\norientation: #{@orientation}"
+                log += "\nrotation: #{@rotation}"
+                log += "\nposition magnitude: #{@position.getMagnitude()}"
+                @logger.setText log
                 @render()
 
-
         render: ->
-            #@line.beginFill 0xFF0000
-            #@line.lineStyle 1, 0xff0000, 1
-            #@line.moveTo @x, @y
-            #@line.lineTo @world.x, @world.y
-            #@line.endFill()
+            @line.beginFill 0xFF0000
+            @line.lineStyle 1, 0xff0000, 1
+            @line.moveTo @x, @y
+            @line.lineTo @position.x, @position.y
+            @line.endFill()
 
-            #Get the angle to the next position of the Agent
-            @rotation = Phaser.Math.angleBetween @x, @y, @world.x, @world.y
+            @x = @position.x
+            @y = @position.y
 
-            #Fix the angle
-            @angle = @angle + 90
-
-            @x = @world.x
-            @y = @world.y
             if !@inCamera
                 @line.clear()
-                @x = 0
-                @y = 0
+                @x = 400
+                @y = 400
 
     Kinematic

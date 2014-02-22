@@ -17,7 +17,11 @@ define(['Phaser'], function(Phaser) {
     WayPointTarget.prototype.update = function() {
       if (this.game.input.mousePointer.isDown) {
         this.x = this.game.input.mousePointer.x;
-        return this.y = this.game.input.mousePointer.y;
+        this.y = this.game.input.mousePointer.y;
+      }
+      if (this.game.input.pointer1.isDown) {
+        this.x = this.game.input.pointer1.x;
+        return this.y = this.game.input.pointer1.y;
       }
     };
 

@@ -14,9 +14,14 @@ define [
             @game.load.spritesheet 'baddie', '/assets/baddie.png', 32, 32
 
         create: ->
+            if @game.scaleToFit
+                @game.stage.scaleMode = Phaser.StageScaleMode.SHOW_ALL
+                @game.stage.scale.setShowAll()
+                @game.stage.scale.refresh()
+
             @debug = new Phaser.Utils.Debug(@game)
 
-            @wpTarget  = new WayPointTarget @game, 10, 10, 'star'
+            @wpTarget  = new WayPointTarget @game, 150, 150, 'star'
             @game.add.existing @wpTarget
 
             @player = new Player @game, 200, 200, 'baddie'
@@ -25,7 +30,7 @@ define [
 
             @game.add.existing @player
 
-            @dude = new Kinematic @game, @game.world.centerX/2, @game.world.centerY/2, 'dude', 1, 'wander'
+            @dude = new Kinematic @game, 400, 400, 'dude', 1, 'arriveDynamic'
             @dude.setTarget(@wpTarget)
             @dude.create()
 
@@ -34,7 +39,7 @@ define [
 
         render: ->
             @debug.renderSpriteBody @dude
-            @debug.renderSpriteInfo @wpTarget, 32, 32, "#ffffff"
+            @debug.renderSpriteInfo @dude, 32, 32, "#ffffff"
             @game.debug.renderPointer(@game.input.mousePointer);
             @game.debug.renderPointer(@game.input.pointer1);
 

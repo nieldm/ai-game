@@ -6,5 +6,5 @@ requirejs.config
     MainState: 'lib/hrdcdd/lib/MainState'
 
 define ['Phaser', 'math', 'MainState'], (Phaser, math, MainState) ->
-    @game = new Phaser.Game 320, 568, Phaser.CANVAS, 'aigame-game'
+    @game = new Phaser.Game 600, 800, Phaser.CANVAS, 'aigame-game'
     @game.state.add 'main', new MainState, true

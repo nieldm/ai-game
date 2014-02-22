@@ -19,5 +19,8 @@ define [
             if @game.input.mousePointer.isDown
                 @x = @game.input.mousePointer.x
                 @y = @game.input.mousePointer.y
+            if @game.input.pointer1.isDown
+                @x = @game.input.pointer1.x
+                @y = @game.input.pointer1.y
 
         WayPointTarget
