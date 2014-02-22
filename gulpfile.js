@@ -16,7 +16,9 @@ var gulp = require('gulp')
 paths = {
   assets: 'src/assets/**/*',
   css:    'src/css/*.css', 
-  js:     ['src/js/**/*.js', '!src/js/lib/*.js'],
+  //js:     ['src/js/boot.js', '!src/js/lib/*.js'],
+  js:     ['src/js/**/*.js', 'src/js/lib/*.js'],
+  libs:   'src/js/lib/**/*.js',
   coffee: 'src/coffee/**/*.coffee',
   dist:   './dist/'
 };
