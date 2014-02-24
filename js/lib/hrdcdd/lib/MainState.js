@@ -1,7 +1,12 @@
 var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-define(['Phaser', '/js/lib/hrdcdd/lib/Movements/Kinematic.js', '/js/lib/hrdcdd/lib/Game/Player.js', '/js/lib/hrdcdd/lib/Game/WayPointTarget.js'], function(Phaser, Kinematic, Player, WayPointTarget) {
+define(
+    ['Phaser',
+        'lib/hrdcdd/lib/Movements/Kinematic.js',
+        'lib/hrdcdd/lib/Game/Player.js',
+        'lib/hrdcdd/lib/Game/WayPointTarget.js']
+    , function(Phaser, Kinematic, Player, WayPointTarget) {
   var MainState;
   MainState = (function(_super) {
     __extends(MainState, _super);
