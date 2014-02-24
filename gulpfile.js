@@ -94,7 +94,7 @@ gulp.task('connect', connect.server({
 
 gulp.task('watch', function () {
   gulp.watch(paths.coffee, ['coffee']);
-  gulp.watch(paths.js, ['jshint']);
+  //gulp.watch(paths.js, ['jshint']);
   gulp.watch(['./src/index.html', paths.css, paths.js], connect.reload);
 });
 
