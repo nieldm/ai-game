@@ -11,9 +11,9 @@ define(['Phaser', 'Kinematic', 'Player', 'WayPointTarget'], function(Phaser, Kin
     }
 
     MainState.prototype.preload = function() {
-      this.game.load.image('star', '/assets/star.png');
-      this.game.load.spritesheet('dude', '/assets/dude.png', 32, 48);
-      return this.game.load.spritesheet('baddie', '/assets/baddie.png', 32, 32);
+      this.game.load.image('star', 'assets/star.png');
+      this.game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
+      return this.game.load.spritesheet('baddie', 'assets/baddie.png', 32, 32);
     };
 
     MainState.prototype.create = function() {
