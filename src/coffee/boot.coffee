@@ -1,4 +1,4 @@
-requirejs.config 
+requirejs.config
   baseUrl: 'js'
   paths:
     Phaser:   'lib/phaser'

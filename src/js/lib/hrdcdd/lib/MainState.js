@@ -29,9 +29,12 @@ define(['Phaser', '/js/lib/hrdcdd/lib/Movements/Kinematic.js', '/js/lib/hrdcdd/l
       this.player.animations.add('left', [0, 1], 10, true);
       this.player.animations.add('right', [2, 3], 10, true);
       this.game.add.existing(this.player);
-      this.dude = new Kinematic(this.game, 400, 400, 'dude', 1, 'arriveDynamic');
+      this.dude = new Kinematic(this.game, 400, 400, 'dude', 1, 'arriveDynamic', true, 'left');
       this.dude.setTarget(this.wpTarget);
-      return this.dude.create();
+      this.dude.create();
+      this.other_dude = new Kinematic(this.game, 400, 400, 'dude', 1, 'alignDynamic', true, 'right');
+      this.other_dude.setTarget(this.dude);
+      return this.other_dude.create();
     };
 
     MainState.prototype.update = function() {};

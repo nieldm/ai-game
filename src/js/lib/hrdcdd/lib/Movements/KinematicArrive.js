@@ -26,8 +26,7 @@ define(['Phaser', '/js/lib/hrdcdd/lib/Movements/KinematicSteeringOutput.js'], fu
         steering.velocity.normalize();
         steering.velocity.multiply(this.maxSpeed, this.maxSpeed);
       }
-      this.character.rotation = this.getNewOrientation(this.character.rotation, steering.velocity);
-      steering.rotation = 0;
+      steering.rotation = this.getNewOrientation(this.character.rotation, steering.velocity);
       return steering;
     };
 

@@ -30,9 +30,13 @@ define [
 
             @game.add.existing @player
 
-            @dude = new Kinematic @game, 400, 400, 'dude', 1, 'arriveDynamic'
+            @dude = new Kinematic @game, 400, 400, 'dude', 1, 'arriveDynamic', true, 'left'
             @dude.setTarget(@wpTarget)
             @dude.create()
+
+            @other_dude = new Kinematic @game, 400, 400, 'dude', 1, 'alignDynamic', true, 'right'
+            @other_dude.setTarget(@dude)
+            @other_dude.create()
 
         update: ->
             #@player.update()

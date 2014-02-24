@@ -8,6 +8,7 @@ define [
             '/js/lib/hrdcdd/lib/Movements/KinematicWander.js'
             '/js/lib/hrdcdd/lib/Movements/Seek.js'
             '/js/lib/hrdcdd/lib/Movements/Arrive.js'
+            '/js/lib/hrdcdd/lib/Movements/Align.js'
         ]
         , (
             Phaser,
@@ -16,10 +17,11 @@ define [
             KinematicArrive,
             KinematicWander,
             Seek,
-            Arrive
+            Arrive,
+            Align
         ) ->
     class Kinematic extends Phaser.Sprite
-        constructor: (game, x, y, sprite, time, behavior) ->
+        constructor: (game, x, y, sprite, time, behavior, log = false, logPos = 'left') ->
 
             @steering = new KinematicSteeringOutput()
 
@@ -31,6 +33,8 @@ define [
             @wanderCounter = 0
             @wanderReset = 50
             @maxSpeed = 4
+            @log = log
+            @logPos = logPos
 
             @velocity = new Phaser.Point()
             @position = @world
@@ -47,13 +51,14 @@ define [
             @line = @game.add.graphics 0, 0
 
             #Testing!
-            window.graphics = @graphics
-            window.game = @game
-            window.line = @line
-            window.world = @world
-            window.Phaser = Phaser
-            window.sprite = @
-            window.time = @time
+            if @log == true
+                window.graphics = @graphics
+                window.game = @game
+                window.line = @line
+                window.world = @world
+                window.Phaser = Phaser
+                window.sprite = @
+                window.time = @time
 
         getTarget: () ->
             @target
@@ -66,7 +71,11 @@ define [
             @frame = 4
             text = "niel's Game"
             style = { font: "11 Arial", fill: "#ff0044", align: "left" }
-            @logger = @game.add.text @game.world.centerX-300, @game.world.centerY-100, text, style
+            if @log == true
+                if @logPos == 'left'
+                    @logger = @game.add.text @game.world.centerX-300, @game.world.centerY-100, text, style
+                else
+                    @logger = @game.add.text @game.world.centerX, @game.world.centerY-100, text, style
 
         update: ->
             if @target?
@@ -78,7 +87,7 @@ define [
                     when 'seekDynamic' then @movement = new Seek @, @target, 2
                     when 'fleeDynamic' then @movement = new Seek @, @target, 2, false
                     when 'arriveDynamic' then @movement = new Arrive @, @target, 2, @maxSpeed, 10, 300
-                window.movement = @movement
+                    when 'alignDynamic' then @movement = new Align @, @target, 10, 4, 10, 300
                 if @movement?
                     @newSteering = @movement.getSteering()
                 if @newSteering?
@@ -97,21 +106,32 @@ define [
                 @position = Phaser.Point.add @position, @velocity.multiply @time, @time
                 @orientation += @rotation * @time
 
-                @velocity = Phaser.Point.add @velocity, @steering.linear.multiply @time, @time
-                @rotation += @steering.angular * @time
+                if @steering.velocity.x != 0 and @steering.velocity.y != 0
+                    @velocity = @steering.velocity
+                else
+                    @velocity = Phaser.Point.add @velocity, @steering.linear.multiply @time, @time
+
+                if @steering.rotation != 0
+                    @rotation = @steering.rotation
+                else
+                    @rotation += @steering.angular * @time
 
                 if @velocity.getMagnitude() > @maxSpeed
                     @velocity.normalize()
                     @velocity.multiply @maxSpeed, @maxSpeed
 
-                log = "steering linear x:#{@steering.linear.x} y:#{@steering.linear.y}"
-                log += "\nsteering angular #{@steering.angular}"
-                log += "\nposition x:#{@position.x} y:#{@position.y}"
-                log += "\nvelocity x:#{@velocity.x} y:#{@velocity.y}"
-                log += "\norientation: #{@orientation}"
-                log += "\nrotation: #{@rotation}"
-                log += "\nposition magnitude: #{@position.getMagnitude()}"
-                @logger.setText log
+                if @log == true
+                    window.movement = @movement
+                    log = "steering linear x:#{@steering.linear.x} y:#{@steering.linear.y}"
+                    log += "\nsteering angular #{@steering.angular}"
+                    log += "\nsteering velocity x:#{@steering.velocity.x} y:#{@steering.velocity.y}"
+                    log += "\nsteering rotation #{@steering.rotation}"
+                    log += "\nposition x:#{@position.x} y:#{@position.y}"
+                    log += "\nvelocity x:#{@velocity.x} y:#{@velocity.y}"
+                    log += "\norientation: #{@orientation}"
+                    log += "\nrotation: #{@rotation}"
+                    log += "\nposition magnitude: #{@position.getMagnitude()}"
+                    @logger.setText log
                 @render()
 
         render: ->

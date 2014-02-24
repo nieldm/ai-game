@@ -30,9 +30,10 @@ define [
                 steering.velocity.normalize()
                 steering.velocity.multiply @maxSpeed, @maxSpeed
 
-            @character.rotation = @getNewOrientation @character.rotation, steering.velocity
+            #@character.rotation = @getNewOrientation @character.rotation, steering.velocity
+            steering.rotation = @getNewOrientation @character.rotation, steering.velocity
 
-            steering.rotation = 0
+            #steering.rotation = 0
             return steering
 
         getNewOrientation: (currentOrientation, velocity) ->
