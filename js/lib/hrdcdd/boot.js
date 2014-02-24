@@ -3,7 +3,7 @@ requirejs.config({
   paths: {
     Phaser: 'lib/phaser',
     math: 'lib/math.min',
-    MainState: 'hrdcdd/lib/MainState'
+    MainState: 'lib/hrdcdd/lib/MainState'
   }
 });
 
