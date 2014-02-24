@@ -1,17 +1,14 @@
 var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-define(['Phaser', '/js/lib/hrdcdd/lib/Movements/KinematicSteeringOutput.js', '/js/lib/hrdcdd/lib/Movements/KinematicSeekFlee.js', '/js/lib/hrdcdd/lib/Movements/KinematicArrive.js', '/js/lib/hrdcdd/lib/Movements/KinematicWander.js', '/js/lib/hrdcdd/lib/Movements/Seek.js', '/js/lib/hrdcdd/lib/Movements/Arrive.js', '/js/lib/hrdcdd/lib/Movements/Align.js'], function(Phaser, KinematicSteeringOutput, KinematicSeekFlee, KinematicArrive, KinematicWander, Seek, Arrive, Align) {
+define(['Phaser', 'KinematicSteeringOutput', 'KinematicSeekFlee', 'KinematicArrive', 'KinematicWander', 'Seek', 'Arrive', 'Align', 'VelocityMatch', 'Pursue'], function(Phaser, KinematicSteeringOutput, KinematicSeekFlee, KinematicArrive, KinematicWander, Seek, Arrive, Align, VelocityMatch, Pursue) {
   var Kinematic;
   Kinematic = (function(_super) {
     __extends(Kinematic, _super);
 
-    function Kinematic(game, x, y, sprite, time, behavior, log, logPos) {
+    function Kinematic(game, x, y, sprite, time, behavior, log) {
       if (log == null) {
-        log = false;
-      }
-      if (logPos == null) {
-        logPos = 'left';
+        log = null;
       }
       this.steering = new KinematicSteeringOutput();
       this.game = game;
@@ -23,8 +20,8 @@ define(['Phaser', '/js/lib/hrdcdd/lib/Movements/KinematicSteeringOutput.js', '/j
       this.wanderCounter = 0;
       this.wanderReset = 50;
       this.maxSpeed = 4;
-      this.log = log;
-      this.logPos = logPos;
+      this.log = log != null ? true : false;
+      this.logConfig = log[0];
       this.velocity = new Phaser.Point();
       this.position = this.world;
       this.orientation = 0;
@@ -62,7 +59,7 @@ define(['Phaser', '/js/lib/hrdcdd/lib/Movements/KinematicSteeringOutput.js', '/j
         align: "left"
       };
       if (this.log === true) {
-        if (this.logPos === 'left') {
+        if (this.logConfig.position === 'left') {
           return this.logger = this.game.add.text(this.game.world.centerX - 300, this.game.world.centerY - 100, text, style);
         } else {
           return this.logger = this.game.add.text(this.game.world.centerX, this.game.world.centerY - 100, text, style);
@@ -86,17 +83,23 @@ define(['Phaser', '/js/lib/hrdcdd/lib/Movements/KinematicSteeringOutput.js', '/j
           case 'wander':
             this.movement = new KinematicWander(this, 6, 2);
             break;
-          case 'seekDynamic':
+          case 'seekDyn':
             this.movement = new Seek(this, this.target, 2);
             break;
-          case 'fleeDynamic':
+          case 'fleeDyn':
             this.movement = new Seek(this, this.target, 2, false);
             break;
-          case 'arriveDynamic':
+          case 'arriveDyn':
             this.movement = new Arrive(this, this.target, 2, this.maxSpeed, 10, 300);
             break;
-          case 'alignDynamic':
+          case 'alignDyn':
             this.movement = new Align(this, this.target, 10, 4, 10, 300);
+            break;
+          case 'velocityMatchDyn':
+            this.movement = new VelocityMatch(this, this.target, 10);
+            break;
+          case 'pursueDel':
+            this.movement = new Pursue(this, this.target, 0.5, 2);
         }
         if (this.movement != null) {
           this.newSteering = this.movement.getSteering();
@@ -105,7 +108,6 @@ define(['Phaser', '/js/lib/hrdcdd/lib/Movements/KinematicSteeringOutput.js', '/j
           this.steering = this.newSteering;
         } else {
           this.velocity.setTo(0, 0);
-          this.line.clear();
         }
       }
       if (this.steering != null) {
@@ -143,17 +145,19 @@ define(['Phaser', '/js/lib/hrdcdd/lib/Movements/KinematicSteeringOutput.js', '/j
     };
 
     Kinematic.prototype.render = function() {
-      this.line.beginFill(0xFF0000);
-      this.line.lineStyle(1, 0xff0000, 1);
-      this.line.moveTo(this.x, this.y);
-      this.line.lineTo(this.position.x, this.position.y);
-      this.line.endFill();
+      var lineColor;
+      if (this.log === true) {
+        lineColor = this.logConfig.lineColor != null ? this.logConfig.lineColor : 0xFF0000;
+        this.line.beginFill(lineColor);
+        this.line.lineStyle(1, lineColor, 1);
+        this.line.moveTo(this.x, this.y);
+        this.line.lineTo(this.position.x, this.position.y);
+        this.line.endFill();
+      }
       this.x = this.position.x;
       this.y = this.position.y;
-      if (!this.inCamera) {
-        this.line.clear();
-        this.x = 400;
-        return this.y = 400;
+      if (this.game.time.fps < 40) {
+        return this.line.clear();
       }
     };
 

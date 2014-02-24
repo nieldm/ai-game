@@ -1,8 +1,8 @@
 define [
             'Phaser',
-            '/js/lib/hrdcdd/lib/Movements/Kinematic.js',
-            '/js/lib/hrdcdd/lib/Game/Player.js',
-            '/js/lib/hrdcdd/lib/Game/WayPointTarget.js',
+            'Kinematic',
+            'Player',
+            'WayPointTarget',
         ]
         , (Phaser, Kinematic, Player, WayPointTarget) ->
     class MainState extends Phaser.State
@@ -30,11 +30,11 @@ define [
 
             @game.add.existing @player
 
-            @dude = new Kinematic @game, 400, 400, 'dude', 1, 'arriveDynamic', true, 'left'
+            @dude = new Kinematic @game, 400, 400, 'dude', 1, 'arriveDyn', [position: 'left', lineColor: 0x00FF00]
             @dude.setTarget(@wpTarget)
             @dude.create()
 
-            @other_dude = new Kinematic @game, 400, 400, 'dude', 1, 'alignDynamic', true, 'right'
+            @other_dude = new Kinematic @game, 400, 400, 'dude', 1, 'pursueDel', [position: 'right', lineColor: 0x0000FF]
             @other_dude.setTarget(@dude)
             @other_dude.create()
 

@@ -2,13 +2,15 @@
 
 define [
             'Phaser',
-            '/js/lib/hrdcdd/lib/Movements/KinematicSteeringOutput.js'
-            '/js/lib/hrdcdd/lib/Movements/KinematicSeekFlee.js'
-            '/js/lib/hrdcdd/lib/Movements/KinematicArrive.js'
-            '/js/lib/hrdcdd/lib/Movements/KinematicWander.js'
-            '/js/lib/hrdcdd/lib/Movements/Seek.js'
-            '/js/lib/hrdcdd/lib/Movements/Arrive.js'
-            '/js/lib/hrdcdd/lib/Movements/Align.js'
+            'KinematicSteeringOutput'
+            'KinematicSeekFlee'
+            'KinematicArrive'
+            'KinematicWander'
+            'Seek'
+            'Arrive'
+            'Align'
+            'VelocityMatch'
+            'Pursue'
         ]
         , (
             Phaser,
@@ -18,10 +20,12 @@ define [
             KinematicWander,
             Seek,
             Arrive,
-            Align
+            Align,
+            VelocityMatch,
+            Pursue
         ) ->
     class Kinematic extends Phaser.Sprite
-        constructor: (game, x, y, sprite, time, behavior, log = false, logPos = 'left') ->
+        constructor: (game, x, y, sprite, time, behavior, log = null) ->
 
             @steering = new KinematicSteeringOutput()
 
@@ -33,8 +37,8 @@ define [
             @wanderCounter = 0
             @wanderReset = 50
             @maxSpeed = 4
-            @log = log
-            @logPos = logPos
+            @log = if log? then true else false
+            @logConfig = log[0]
 
             @velocity = new Phaser.Point()
             @position = @world
@@ -72,7 +76,7 @@ define [
             text = "niel's Game"
             style = { font: "11 Arial", fill: "#ff0044", align: "left" }
             if @log == true
-                if @logPos == 'left'
+                if @logConfig.position == 'left'
                     @logger = @game.add.text @game.world.centerX-300, @game.world.centerY-100, text, style
                 else
                     @logger = @game.add.text @game.world.centerX, @game.world.centerY-100, text, style
@@ -84,10 +88,12 @@ define [
                     when 'flee' then @movement = new KinematicSeekFlee @, @target, 0.1, false
                     when 'arrive' then @movement = new KinematicArrive @, @target, 1, 25, 1.25
                     when 'wander' then @movement = new KinematicWander @, 6, 2
-                    when 'seekDynamic' then @movement = new Seek @, @target, 2
-                    when 'fleeDynamic' then @movement = new Seek @, @target, 2, false
-                    when 'arriveDynamic' then @movement = new Arrive @, @target, 2, @maxSpeed, 10, 300
-                    when 'alignDynamic' then @movement = new Align @, @target, 10, 4, 10, 300
+                    when 'seekDyn' then @movement = new Seek @, @target, 2
+                    when 'fleeDyn' then @movement = new Seek @, @target, 2, false
+                    when 'arriveDyn' then @movement = new Arrive @, @target, 2, @maxSpeed, 10, 300
+                    when 'alignDyn' then @movement = new Align @, @target, 10, 4, 10, 300
+                    when 'velocityMatchDyn' then @movement = new VelocityMatch @, @target, 10
+                    when 'pursueDel' then @movement = new Pursue @, @target, 0.5, 2
                 if @movement?
                     @newSteering = @movement.getSteering()
                 if @newSteering?
@@ -96,7 +102,6 @@ define [
                     #@steering.angular = if @steering.rotation? then @steering.rotation else @steering.angular
                 else
                     @velocity.setTo 0, 0
-                    @line.clear()
 
 
             if @steering?
@@ -135,18 +140,22 @@ define [
                 @render()
 
         render: ->
-            @line.beginFill 0xFF0000
-            @line.lineStyle 1, 0xff0000, 1
-            @line.moveTo @x, @y
-            @line.lineTo @position.x, @position.y
-            @line.endFill()
+            if @log is true
+                lineColor = if @logConfig.lineColor? then @logConfig.lineColor else 0xFF0000
+                @line.beginFill lineColor
+                @line.lineStyle 1, lineColor, 1
+                @line.moveTo @x, @y
+                @line.lineTo @position.x, @position.y
+                @line.endFill()
 
             @x = @position.x
             @y = @position.y
 
-            if !@inCamera
+            #if !@inCamera
+                #@line.clear()
+                #@x = 400
+                #@y = 400
+            if @game.time.fps < 40
                 @line.clear()
-                @x = 400
-                @y = 400
 
     Kinematic

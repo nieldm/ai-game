@@ -2,36 +2,32 @@ var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 define(['Phaser', 'KinematicSteeringOutput'], function(Phaser, KinematicSteeringOutput) {
-  var Seek;
-  Seek = (function(_super) {
-    __extends(Seek, _super);
+  var VelocityMatch;
+  VelocityMatch = (function(_super) {
+    __extends(VelocityMatch, _super);
 
-    function Seek(character, target, maxAcceleration, seek) {
-      if (seek == null) {
-        seek = true;
-      }
+    function VelocityMatch(character, target, maxAcceleration) {
       this.character = character;
       this.target = target;
       this.maxAcceleration = maxAcceleration;
-      this.seek = seek;
+      this.timeToTarget = 0.5;
     }
 
-    Seek.prototype.getSteering = function() {
+    VelocityMatch.prototype.getSteering = function() {
       var steering;
       steering = new KinematicSteeringOutput();
-      if (this.seek) {
-        steering.linear = Phaser.Point.subtract(this.target.position, this.character.position);
-      } else {
-        steering.linear = Phaser.Point.subtract(this.character.position, this.target.position);
+      steering.linear = Phaser.Point.subtract(this.target.velocity, this.character.velocity);
+      steering.linear.divide(this.timeToTarget, this.timeToTarget);
+      if (steering.linear.getMagnitude() > this.maxAcceleration) {
+        steering.linear.normalize();
+        steering.linear.multiply(this.maxAcceleration, this.maxAcceleration);
       }
-      steering.linear.normalize();
-      steering.linear.multiply(this.maxAcceleration, this.maxAcceleration);
       steering.angular = 0;
       return steering;
     };
 
-    return Seek;
+    return VelocityMatch;
 
   })(Phaser.Sprite);
-  return Seek;
+  return VelocityMatch;
 });

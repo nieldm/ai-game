@@ -2,7 +2,7 @@
 
 define [
             'Phaser',
-            '/js/lib/hrdcdd/lib/Movements/KinematicSteeringOutput.js'
+            'KinematicSteeringOutput'
         ]
         , (
             Phaser,
@@ -32,8 +32,6 @@ define [
                 targetRotation = @maxRotation
             else
                 targetRotation = @maxRotation * rotationSize / @slowRadius
-            #direction = Phaser.Point.subtract @target.position, @character.position
-            #distance = direction.getMagnitude()
 
             targetRotation *= rotation / rotationSize
 
@@ -46,23 +44,6 @@ define [
                 steering.angular *= @maxAngularAcceleration
 
             steering.linear.setTo 0,0
-            return steering
-
-
-            targetVelocity = direction
-            targetVelocity.normalize()
-            targetVelocity.multiply targetSpeed, targetSpeed
-
-            #steering.linear = Phaser.Point.substract targetVelocity, @character.velocity
-            steering.linear.x = targetVelocity.x - @character.velocity.x
-            steering.linear.y = targetVelocity.y - @character.velocity.y
-            steering.linear.divide @timeToTarget, @timeToTarget
-
-            if steering.linear.getMagnitude() > @maxAcceleration
-                steering.linear.normalize()
-                steering.linear.multiply @maxAcceleration, @maxAcceleration
-
-            steering.angular = 0
             return steering
 
     Align

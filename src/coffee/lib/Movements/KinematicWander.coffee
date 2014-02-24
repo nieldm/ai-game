@@ -2,7 +2,7 @@
 
 define [
             'Phaser',
-            '/js/lib/hrdcdd/lib/Movements/KinematicSteeringOutput.js'
+            'KinematicSteeringOutput'
         ]
         , (
             Phaser,

@@ -1,7 +1,7 @@
 var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-define(['Phaser', '/js/lib/hrdcdd/lib/Movements/Kinematic.js', '/js/lib/hrdcdd/lib/Game/Player.js', '/js/lib/hrdcdd/lib/Game/WayPointTarget.js'], function(Phaser, Kinematic, Player, WayPointTarget) {
+define(['Phaser', 'Kinematic', 'Player', 'WayPointTarget'], function(Phaser, Kinematic, Player, WayPointTarget) {
   var MainState;
   MainState = (function(_super) {
     __extends(MainState, _super);
@@ -29,10 +29,20 @@ define(['Phaser', '/js/lib/hrdcdd/lib/Movements/Kinematic.js', '/js/lib/hrdcdd/l
       this.player.animations.add('left', [0, 1], 10, true);
       this.player.animations.add('right', [2, 3], 10, true);
       this.game.add.existing(this.player);
-      this.dude = new Kinematic(this.game, 400, 400, 'dude', 1, 'arriveDynamic', true, 'left');
+      this.dude = new Kinematic(this.game, 400, 400, 'dude', 1, 'arriveDyn', [
+        {
+          position: 'left',
+          lineColor: 0x00FF00
+        }
+      ]);
       this.dude.setTarget(this.wpTarget);
       this.dude.create();
-      this.other_dude = new Kinematic(this.game, 400, 400, 'dude', 1, 'alignDynamic', true, 'right');
+      this.other_dude = new Kinematic(this.game, 400, 400, 'dude', 1, 'pursueDel', [
+        {
+          position: 'right',
+          lineColor: 0x0000FF
+        }
+      ]);
       this.other_dude.setTarget(this.dude);
       return this.other_dude.create();
     };
