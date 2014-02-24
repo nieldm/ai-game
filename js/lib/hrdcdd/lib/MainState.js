@@ -3,9 +3,9 @@ var __hasProp = {}.hasOwnProperty,
 
 define(
     ['Phaser',
-        'lib/hrdcdd/lib/Movements/Kinematic.js',
-        'lib/hrdcdd/lib/Game/Player.js',
-        'lib/hrdcdd/lib/Game/WayPointTarget.js']
+        'js/lib/hrdcdd/lib/Movements/Kinematic.js',
+        'js/lib/hrdcdd/lib/Game/Player.js',
+        'js/lib/hrdcdd/lib/Game/WayPointTarget.js']
     , function(Phaser, Kinematic, Player, WayPointTarget) {
   var MainState;
   MainState = (function(_super) {
