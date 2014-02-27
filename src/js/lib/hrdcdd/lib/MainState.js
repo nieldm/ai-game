@@ -51,9 +51,7 @@ define(['Phaser', 'Kinematic', 'Player', 'WayPointTarget'], function(Phaser, Kin
 
     MainState.prototype.render = function() {
       this.debug.renderSpriteBody(this.dude);
-      this.debug.renderSpriteInfo(this.dude, 32, 32, "#ffffff");
-      this.game.debug.renderPointer(this.game.input.mousePointer);
-      return this.game.debug.renderPointer(this.game.input.pointer1);
+      return this.debug.renderSpriteInfo(this.dude, 32, 32, "#ffffff");
     };
 
     return MainState;

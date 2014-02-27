@@ -44,7 +44,7 @@ define [
         render: ->
             @debug.renderSpriteBody @dude
             @debug.renderSpriteInfo @dude, 32, 32, "#ffffff"
-            @game.debug.renderPointer(@game.input.mousePointer);
-            @game.debug.renderPointer(@game.input.pointer1);
+            #@game.debug.renderPointer(@game.input.mousePointer);
+            #@game.debug.renderPointer(@game.input.pointer1);
 
     MainState
