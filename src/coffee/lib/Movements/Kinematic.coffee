@@ -11,6 +11,7 @@ define [
             'Align'
             'VelocityMatch'
             'Pursue'
+            'FollowPath'
         ]
         , (
             Phaser,
@@ -22,7 +23,8 @@ define [
             Arrive,
             Align,
             VelocityMatch,
-            Pursue
+            Pursue,
+            FollowPath
         ) ->
     class Kinematic extends Phaser.Sprite
         constructor: (game, x, y, sprite, time, behavior, log = null) ->
@@ -36,7 +38,7 @@ define [
             @behavior = behavior
             @wanderCounter = 0
             @wanderReset = 50
-            @maxSpeed = 4
+            @maxSpeed = 1
             @log = if log? then true else false
             @logConfig = log[0]
 
@@ -70,6 +72,9 @@ define [
         setTarget: (target) ->
             @target = target
 
+        setPath: (path) ->
+            @path = path
+
         create: ->
             @game.add.existing @
             @frame = 4
@@ -87,21 +92,27 @@ define [
                     when 'seek' then @movement = new KinematicSeekFlee @, @target, 0.1, true
                     when 'flee' then @movement = new KinematicSeekFlee @, @target, 0.1, false
                     when 'arrive' then @movement = new KinematicArrive @, @target, 1, 25, 1.25
-                    when 'wander' then @movement = new KinematicWander @, 6, 2
                     when 'seekDyn' then @movement = new Seek @, @target, 2
                     when 'fleeDyn' then @movement = new Seek @, @target, 2, false
                     when 'arriveDyn' then @movement = new Arrive @, @target, 2, @maxSpeed, 10, 300
                     when 'alignDyn' then @movement = new Align @, @target, 10, 4, 10, 300
                     when 'velocityMatchDyn' then @movement = new VelocityMatch @, @target, 10
-                    when 'pursueDel' then @movement = new Pursue @, @target, 0.5, 2
-                if @movement?
-                    @newSteering = @movement.getSteering()
-                if @newSteering?
-                    @steering = @newSteering
-                    #@steering.linear = if @steering.velocity? then @steering.velocity else @steering.linear
-                    #@steering.angular = if @steering.rotation? then @steering.rotation else @steering.angular
-                else
-                    @velocity.setTo 0, 0
+                    when 'pursueDel' then @movement = new Pursue @, 0.5, 2
+            else
+                switch @behavior
+                  when 'wander' then @movement = new KinematicWander @, 6, 2
+                  when 'followPath'
+                    @currentPathPoint = if @curretPathPoint? then @currentPathPoint else null
+                    @movement = new FollowPath @, 0.1, 40, @currentPathPoint, @path
+
+            if @movement?
+                @newSteering = @movement.getSteering()
+            if @newSteering?
+                @steering = @newSteering
+                #@steering.linear = if @steering.velocity? then @steering.velocity else @steering.linear
+                #@steering.angular = if @steering.rotation? then @steering.rotation else @steering.angular
+            else
+                @velocity.setTo 0, 0
 
 
             if @steering?

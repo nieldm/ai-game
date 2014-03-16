@@ -44,7 +44,7 @@ gulp.task('coffee', function () {
     return gulp.src(paths.coffee)
         .pipe(coffee({bare: true}).on('error', gutil.log))
         .pipe(gulp.dest('src/js/lib/hrdcdd'))
-        .pipe(notify('Master your Coffee it\'s ready!'))
+        //.pipe(notify('Master your Coffee it\'s ready!'))
 });
 
 gulp.task('uglify', ['jshint'], function () {
@@ -98,6 +98,7 @@ gulp.task('watch', function () {
   gulp.watch(['./src/index.html', paths.css, paths.js], connect.reload);
 });
 
+gulp.task('serve', ['connect']);
 gulp.task('default', ['connect', 'coffee', 'watch']);
 gulp.task('build', ['copy', 'coffee', 'uglify', 'minifycss', 'processhtml', 'minifyhtml']);
 
